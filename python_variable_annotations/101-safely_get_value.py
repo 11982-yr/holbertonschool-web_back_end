@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """Module for safely_get_value function"""
 
 from typing import Mapping, Any, TypeVar, Union

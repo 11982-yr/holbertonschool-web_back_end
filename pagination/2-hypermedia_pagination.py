@@ -5,17 +5,11 @@ Hypermedia pagination
 
 import csv
 import math
-from typing import List, Tuple, Duct, Any
+from typing import List, Tuple, Dict, Any
 
 
 def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """
-    Return a tuple of size two containing a start index and an end index
-    corresponding to the range of indexes to return in a list for those
-    particular pagination parameters.
-
-    Page numbers are 1-indexed.
-    """
+    """Return a tuple (start_index, end_index) for pagination parameters."""
     start_index = (page - 1) * page_size
     end_index = page * page_size
     return start_index, end_index
@@ -38,10 +32,7 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """
-        Return the appropriate page of the dataset.
-        If page/page_size are out of range, return an empty list.
-        """
+        """Return the appropriate page of the dataset."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
@@ -57,7 +48,6 @@ class Server:
         Return hypermedia-style pagination info.
         Reuses get_page.
         """
-
         data_page = self.get_page(page, page_size)
 
         total_items = len(self.dataset())

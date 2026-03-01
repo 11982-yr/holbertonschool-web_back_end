@@ -28,17 +28,20 @@ class Server:
         """Dataset indexed by sorting position, starting at 0."""
         if self.__indexed_dataset is None:
             dataset = self.dataset()
-            self.__indexed_dataset = {i: dataset[i] for i in range(len(dataset))}
+            truncated_dataset = dataset[:1000]
+            self.__indexed_dataset = {
+                i: truncated_dataset[i] for i in range(len(truncated_dataset))
+            }
         return self.__indexed_dataset
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
         """
         Deletion-resilient pagination.
 
-        Returns a dict with:
+        Returns:
           - index: current start index
-          - next_index: next index to query with
-          - page_size: requested page size
+          - next_index: index to query next
+          - page_size: actual size of returned data
           - data: list of rows
         """
         if index is None:
@@ -48,23 +51,20 @@ class Server:
         assert isinstance(page_size, int) and page_size > 0
 
         indexed = self.indexed_dataset()
-        # "valid range" means within the original indexing span (0..max_key)
-        max_key = max(indexed.keys()) if indexed else 0
-        assert index <= max_key
+        assert index < len(self.dataset()[:1000])
 
         data: List[List] = []
         current = index
 
-        # Collect up to page_size existing rows, skipping deleted indices
-        while len(data) < page_size and current <= max_key:
+        # Keep scanning forward until we collect page_size existing rows
+        while len(data) < page_size and current < len(self.dataset()[:1000]):
             if current in indexed:
                 data.append(indexed[current])
             current += 1
 
-        # current is now the first index after the last checked position
         return {
             "index": index,
             "next_index": current,
-            "page_size": page_size,
+            "page_size": len(data),
             "data": data,
         }

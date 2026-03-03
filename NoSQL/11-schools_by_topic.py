@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ Schools by topic """
 import pymongo
-from typing import List
 
 
 def schools_by_topic(mongo_collection, topic):
@@ -18,6 +17,6 @@ def schools_by_topic(mongo_collection, topic):
     schools: list = []
 
     for school in mongo_collection.find(query):
-        schools = append(school)
+        schools.append(school)
 
     return schools

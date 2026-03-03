@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Update document """
 import pymongo
+from typing import List
 
 
 def update_topics(mongo_collection, name, topics):
@@ -12,8 +13,7 @@ def update_topics(mongo_collection, name, topics):
             topics: list of topics
     
         Return:
-            id of the new element
+            Nothing
     """
-    update_topics = mongo_collection.insert_one(kwargs)
-
-    return (new_school.inserted_id)
+    query: dict = {'name': name}
+    mongo_collection.update_many(query, {'$set': {'topics': topics}})

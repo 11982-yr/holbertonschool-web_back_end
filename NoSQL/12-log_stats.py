@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Nginx logs """
+""" Log stats """
 from pymongo import MongoClient
 
 

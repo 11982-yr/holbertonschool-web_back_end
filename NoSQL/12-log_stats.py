@@ -1,31 +1,45 @@
 #!/usr/bin/env python3
-"""log stats from collection
 """
+12-log_stats.py
+
+Provides stats about Nginx logs stored in MongoDB:
+Database: logs
+Collection: nginx
+"""
+
 from pymongo import MongoClient
 
 
-METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+def main():
+    """Print stats about nginx logs in MongoDB."""
+    client = MongoClient("mongodb://127.0.0.1:27017")
+    collection = client.logs.nginx
 
+    # Total number of logs
+    total = collection.count_documents({})
+    print(f"{total} logs")
 
-def log_stats(mongo_collection, option=None):
-    """ script that provides some stats about Nginx logs stored in MongoDB
-    """
-    items = {}
-    if option:
-        value = mongo_collection.count_documents(
-            {"method": {"$regex": option}})
-        print(f"\tmethod {option}: {value}")
-        return
-
-    result = mongo_collection.count_documents(items)
-    print(f"{result} logs")
     print("Methods:")
-    for method in METHODS:
-        log_stats(nginx_collection, method)
-    status_check = mongo_collection.count_documents({"path": "/status"})
-    print(f"{status_check} status check")
+
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    counts = {m: 0 for m in methods}
+
+    # Count each method using aggregation
+    pipeline = [
+        {"$group": {"_id": "$method", "count": {"$sum": 1}}}
+    ]
+    for doc in collection.aggregate(pipeline):
+        method = doc.get("_id")
+        if method in counts:
+            counts[method] = doc.get("count", 0)
+
+    for m in methods:
+        print(f"\tmethod {m}: {counts[m]}")
+
+    # Count status checks
+    status = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status} status check")
 
 
 if __name__ == "__main__":
-    nginx_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
-    log_stats(nginx_collection)
+    main()

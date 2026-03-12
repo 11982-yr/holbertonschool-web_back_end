@@ -1,10 +1,15 @@
+/*
+    Make method
+    Without arrow,
+    because arrow function doesn't work with this
+*/
 export default class Currency {
   constructor(code = '', name = '') {
     this.code = code;
     this.name = name;
   }
 
-  displayFulllCurrency() {
+  displayFullCurrency() {
     return `${this.name} (${this.code})`;
   }
 

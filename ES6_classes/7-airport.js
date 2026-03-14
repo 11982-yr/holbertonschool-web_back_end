@@ -1,24 +1,39 @@
-// Extend Buildinf
-import Building from './5-building';
+// Airport Class
 
 /**
- * Define Class
+ * Build initial class
  *
- * @class SkyHighBuilding
+ * @class Airport
  */
-class SkyHighBuilding extends Building {
-  constructor(sqft, floors) {
-    super(sqft);
-    this._floors = floors;
+export default class Airport {
+  constructor(name = '', code = '') {
+    this.name = name;
+    this.code = code;
   }
 
-  get floors() {
-    return (this._floors);
+  get [Symbol.toStringTag]() {
+    return `${this.code}`;
   }
 
-  evacuationWarningMessage() {
-    return (`Evacuate slowly the ${this.floors} floors`);
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    if (typeof value !== 'string') {
+      throw new TypeError('name must be a string');
+    }
+    this._name = value;
+  }
+
+  get code() {
+    return this._code;
+  }
+
+  set code(value) {
+    if (typeof value !== 'string') {
+      throw new TypeError('code must be a string');
+    }
+    this._code = value;
   }
 }
-
-export default SkyHighBuilding;

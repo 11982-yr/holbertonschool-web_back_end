@@ -1,4 +1,4 @@
-import { readDatabase } from '../utils';
+import readDatabase from '../utils.js';
 
 export default class StudentsController {
   static getAllStudents(req, res) {
@@ -6,19 +6,18 @@ export default class StudentsController {
 
     readDatabase(database)
       .then((fields) => {
-        const output = ['This is the list of our students'];
-
-        const sortedFields = Object.keys(fields).sort((a, b) =>
-          a.localeCompare(b)
+        const response = ['This is the list of our students'];
+        const fieldNames = Object.keys(fields).sort((a, b) =>
+          a.toLowerCase().localeCompare(b.toLowerCase())
         );
 
-        sortedFields.forEach((field) => {
-          output.push(
+        fieldNames.forEach((field) => {
+          response.push(
             `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`
           );
         });
 
-        res.status(200).send(output.join('\n'));
+        res.status(200).send(response.join('\n'));
       })
       .catch(() => {
         res.status(500).send('Cannot load the database');
@@ -27,7 +26,7 @@ export default class StudentsController {
 
   static getAllStudentsByMajor(req, res) {
     const database = process.argv[2];
-    const major = req.params.major;
+    const { major } = req.params;
 
     if (major !== 'CS' && major !== 'SWE') {
       res.status(500).send('Major parameter must be CS or SWE');
